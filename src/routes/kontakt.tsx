@@ -1,11 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useMemo } from "react";
 import { useToast } from "@/components/Toaster";
 import { useReveal } from "@/hooks/useReveal";
 import { site } from "@/lib/site";
 
-// Web3Forms universal hCaptcha sitekey
-const HCAPTCHA_SITEKEY = "50b2fe65-b00b-4ea9-a60a-4c9159ec11cb";
+function generateMathChallenge() {
+  const a = Math.floor(Math.random() * 9) + 1;
+  const b = Math.floor(Math.random() * 9) + 1;
+  return { question: `${a} + ${b}`, answer: a + b };
+}
 
 export const Route = createFileRoute("/kontakt")({
   head: () => ({
@@ -25,49 +28,20 @@ export const Route = createFileRoute("/kontakt")({
   component: Contact,
 });
 
-type Errors = { name?: string; email?: string; message?: string };
+type Errors = { name?: string; email?: string; message?: string; captcha?: string };
 
 function Contact() {
   useReveal();
   const { toast } = useToast();
   const [errors, setErrors] = useState<Errors>({});
   const [sending, setSending] = useState(false);
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
-  const captchaRef = useRef<HTMLDivElement>(null);
-  const captchaWidgetId = useRef<string | null>(null);
+  const [captchaInput, setCaptchaInput] = useState("");
+  const [challenge, setChallenge] = useState(generateMathChallenge);
 
-  // Load hCaptcha script once
-  useEffect(() => {
-    if (document.getElementById("hcaptcha-script")) return;
-    const script = document.createElement("script");
-    script.id = "hcaptcha-script";
-    script.src = "https://js.hcaptcha.com/1/api.js?render=explicit";
-    script.async = true;
-    script.defer = true;
-    script.onload = () => renderCaptcha();
-    document.head.appendChild(script);
-    return;
-  }, []);
-
-  const renderCaptcha = useCallback(() => {
-    if (!captchaRef.current || captchaWidgetId.current !== null) return;
-    const w = window as any;
-    if (!w.hcaptcha) return;
-    captchaWidgetId.current = w.hcaptcha.render(captchaRef.current, {
-      sitekey: HCAPTCHA_SITEKEY,
-      theme: "dark",
-      callback: (token: string) => setCaptchaToken(token),
-      "expired-callback": () => setCaptchaToken(null),
-    });
-  }, []);
-
-  // Render captcha when script is already loaded (e.g. navigating back)
-  useEffect(() => {
-    const w = window as any;
-    if (w.hcaptcha && captchaRef.current && captchaWidgetId.current === null) {
-      renderCaptcha();
-    }
-  }, [renderCaptcha]);
+  const newChallenge = () => {
+    setChallenge(generateMathChallenge());
+    setCaptchaInput("");
+  };
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -98,10 +72,13 @@ function Contact() {
       return;
     }
 
-    if (!captchaToken) {
+    if (parseInt(captchaInput, 10) !== challenge.answer) {
+      next.captcha = "Špatná odpověď. Zkuste to znovu.";
+      setErrors({ ...next });
+      newChallenge();
       toast({
         title: "Ověření proti spamu",
-        description: "Zaškrtněte prosím 'Nejsem robot' před odesláním.",
+        description: "Vyřešte prosím správně příklad.",
         variant: "error",
       });
       return;
@@ -124,12 +101,8 @@ function Contact() {
       const result = await res.json();
       if (result.success) {
         form.reset();
-        // Reset captcha
-        setCaptchaToken(null);
-        const w = window as any;
-        if (w.hcaptcha && captchaWidgetId.current !== null) {
-          w.hcaptcha.reset(captchaWidgetId.current);
-        }
+        setCaptchaInput("");
+        newChallenge();
         toast({
           title: "Zpráva odeslána ✓",
           description: "Ozvu se do 24 hodin. Spěchá to? Zavolejte na " + site.phoneDisplay + ".",
@@ -285,9 +258,28 @@ function Contact() {
             <input id="company" name="company" type="text" tabIndex={-1} autoComplete="off" />
           </div>
 
-          {/* hCaptcha "Nejsem robot" */}
-          <div className="mt-6">
-            <div ref={captchaRef} />
+          {/* Anti-spam: matematický příklad */}
+          <div className="mt-5">
+            <label htmlFor="captcha" className="text-sm text-muted-foreground">
+              Ověření: Kolik je <span className="font-medium text-primary">{challenge.question}</span> ?
+            </label>
+            <input
+              id="captcha"
+              type="text"
+              inputMode="numeric"
+              autoComplete="off"
+              value={captchaInput}
+              onChange={(e) => setCaptchaInput(e.target.value)}
+              aria-invalid={!!errors.captcha}
+              aria-describedby={errors.captcha ? "captcha-error" : undefined}
+              className={`${fieldClass} ${errors.captcha ? "border-destructive" : "border-input"}`}
+              placeholder="Napište výsledek"
+            />
+            {errors.captcha ? (
+              <p id="captcha-error" className="mt-2 text-sm text-destructive">
+                {errors.captcha}
+              </p>
+            ) : null}
           </div>
 
           <button
