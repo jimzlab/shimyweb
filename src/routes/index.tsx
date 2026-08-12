@@ -45,10 +45,10 @@ export const Route = createFileRoute("/")({
 });
 
 const featured = [
-  { src: heroWedding, alt: "Svatební pár při zlaté hodině", label: "Svatby", w: 1920, h: 1280 },
-  { src: portrait1, alt: "Portrét v teplém okenním světle", label: "Portréty", w: 1024, h: 1280 },
-  { src: family1, alt: "Rodina v podzimním parku", label: "Rodina", w: 1280, h: 960 },
-  { src: product1, alt: "Produktová fotografie flakonu", label: "Produkty", w: 1024, h: 1024 },
+  { src: heroWedding, alt: "Fotografie psa", label: "Zvířata & Atmosféra", w: 1920, h: 1280 },
+  { src: portrait1, alt: "Detailní snímek Měsíce", label: "Krajina & Noc", w: 1024, h: 1280 },
+  { src: family1, alt: "Automobilové focení BMW", label: "Autosrazy & Auta", w: 1280, h: 960 },
+  { src: product1, alt: "Portrétní fotografie Ondry", label: "Portréty", w: 1024, h: 1024 },
 ];
 
 function Home() {
