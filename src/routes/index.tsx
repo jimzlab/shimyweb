@@ -56,21 +56,25 @@ function Home() {
 
   return (
     <>
-      <section className="relative isolate flex min-h-[88svh] items-end overflow-hidden">
-        <img
-          src={heroWedding}
-          alt="Nevěsta a ženich v objetí při západu slunce na louce"
-          width={1920}
-          height={1280}
-          fetchPriority="high"
-          decoding="async"
-          className="absolute inset-0 -z-10 size-full object-cover"
-          style={{ animation: "slow-zoom 12s ease-out both" }}
-        />
+      <section
+        className="relative isolate flex min-h-[88svh] items-end overflow-hidden"
+        style={{
+          background:
+            "linear-gradient(160deg, oklch(0.14 0.01 60) 0%, oklch(0.20 0.012 55) 40%, oklch(0.17 0.008 60) 70%, oklch(0.12 0.006 65) 100%)",
+        }}
+      >
+        {/* Subtle warm accent glow */}
         <div
           aria-hidden="true"
-          className="absolute inset-0 -z-10"
-          style={{ background: "var(--gradient-hero)" }}
+          className="absolute -z-10"
+          style={{
+            top: "10%",
+            right: "-5%",
+            width: "50%",
+            height: "60%",
+            background: "radial-gradient(ellipse, oklch(0.822 0.104 63.5 / 0.06) 0%, transparent 70%)",
+            filter: "blur(80px)",
+          }}
         />
         <div className="container-x pb-14 sm:pb-20">
           <p className="eyebrow">

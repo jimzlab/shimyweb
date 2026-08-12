@@ -1,8 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useToast } from "@/components/Toaster";
 import { useReveal } from "@/hooks/useReveal";
 import { site } from "@/lib/site";
+
+// Web3Forms universal hCaptcha sitekey
+const HCAPTCHA_SITEKEY = "50b2fe65-b00b-4ea9-a60a-4c9159ec11cb";
 
 export const Route = createFileRoute("/kontakt")({
   head: () => ({
@@ -29,8 +32,44 @@ function Contact() {
   const { toast } = useToast();
   const [errors, setErrors] = useState<Errors>({});
   const [sending, setSending] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const captchaRef = useRef<HTMLDivElement>(null);
+  const captchaWidgetId = useRef<string | null>(null);
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  // Load hCaptcha script once
+  useEffect(() => {
+    if (document.getElementById("hcaptcha-script")) return;
+    const script = document.createElement("script");
+    script.id = "hcaptcha-script";
+    script.src = "https://js.hcaptcha.com/1/api.js?render=explicit";
+    script.async = true;
+    script.defer = true;
+    script.onload = () => renderCaptcha();
+    document.head.appendChild(script);
+    return;
+  }, []);
+
+  const renderCaptcha = useCallback(() => {
+    if (!captchaRef.current || captchaWidgetId.current !== null) return;
+    const w = window as any;
+    if (!w.hcaptcha) return;
+    captchaWidgetId.current = w.hcaptcha.render(captchaRef.current, {
+      sitekey: HCAPTCHA_SITEKEY,
+      theme: "dark",
+      callback: (token: string) => setCaptchaToken(token),
+      "expired-callback": () => setCaptchaToken(null),
+    });
+  }, []);
+
+  // Render captcha when script is already loaded (e.g. navigating back)
+  useEffect(() => {
+    const w = window as any;
+    if (w.hcaptcha && captchaRef.current && captchaWidgetId.current === null) {
+      renderCaptcha();
+    }
+  }, [renderCaptcha]);
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const data = new FormData(form);
@@ -59,15 +98,58 @@ function Contact() {
       return;
     }
 
-    setSending(true);
-    setTimeout(() => {
-      setSending(false);
-      form.reset();
+    if (!captchaToken) {
       toast({
-        title: "Zpráva odeslána",
-        description: "Ozvu se do 24 hodin. Spěchá to? Zavolejte na " + site.phoneDisplay + ".",
+        title: "Ověření proti spamu",
+        description: "Zaškrtněte prosím 'Nejsem robot' před odesláním.",
+        variant: "error",
       });
-    }, 700);
+      return;
+    }
+
+    setSending(true);
+    try {
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          access_key: "baea0276-eb7b-4e36-9b5a-e47e94a43860",
+          subject: `Nová poptávka z webu SimekPhoto od ${name}`,
+          from_name: "SimekPhoto Web",
+          name,
+          email,
+          message,
+        }),
+      });
+      const result = await res.json();
+      if (result.success) {
+        form.reset();
+        // Reset captcha
+        setCaptchaToken(null);
+        const w = window as any;
+        if (w.hcaptcha && captchaWidgetId.current !== null) {
+          w.hcaptcha.reset(captchaWidgetId.current);
+        }
+        toast({
+          title: "Zpráva odeslána ✓",
+          description: "Ozvu se do 24 hodin. Spěchá to? Zavolejte na " + site.phoneDisplay + ".",
+        });
+      } else {
+        toast({
+          title: "Chyba při odesílání",
+          description: "Zkuste to prosím znovu nebo zavolejte.",
+          variant: "error",
+        });
+      }
+    } catch {
+      toast({
+        title: "Chyba sítě",
+        description: "Nepodařilo se odeslat zprávu. Zkuste to prosím znovu.",
+        variant: "error",
+      });
+    } finally {
+      setSending(false);
+    }
   };
 
   const fieldClass =
@@ -201,6 +283,11 @@ function Contact() {
           <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
             <label htmlFor="company">Firma</label>
             <input id="company" name="company" type="text" tabIndex={-1} autoComplete="off" />
+          </div>
+
+          {/* hCaptcha "Nejsem robot" */}
+          <div className="mt-6">
+            <div ref={captchaRef} />
           </div>
 
           <button
