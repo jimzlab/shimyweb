@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { CheckCircle2, Phone, Sparkles, Send } from "lucide-react";
 import { useReveal } from "@/hooks/useReveal";
 import { site } from "@/lib/site";
 
@@ -116,8 +117,9 @@ function Services() {
           >
             <div>
               {p.highlight ? (
-                <span className="eyebrow inline-block mb-3 rounded-full bg-primary/10 px-3 py-1 text-primary">
-                  Oblíbený balíček
+                <span className="eyebrow inline-flex items-center gap-1.5 mb-3 rounded-full bg-primary/10 px-3 py-1 text-primary">
+                  <Sparkles className="size-3.5" />
+                  <span>Oblíbený balíček</span>
                 </span>
               ) : null}
               
@@ -130,8 +132,8 @@ function Services() {
 
               <ul className="mt-6 space-y-3 text-sm text-muted-foreground">
                 {p.items.map((item) => (
-                  <li key={item} className="flex gap-3">
-                    <span aria-hidden="true" className="mt-2 size-1.5 shrink-0 rounded-full bg-primary" />
+                  <li key={item} className="flex gap-3 items-start">
+                    <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
                     <span>{item}</span>
                   </li>
                 ))}
@@ -141,13 +143,14 @@ function Services() {
             <div className="mt-8 pt-4">
               <a
                 href={site.phoneHref}
-                className={`flex min-h-12 w-full items-center justify-center rounded-sm px-5 text-sm font-medium transition-all ${
+                className={`flex min-h-12 w-full items-center justify-center gap-2 rounded-sm px-5 text-sm font-medium transition-all ${
                   p.highlight
                     ? "bg-primary text-primary-foreground hover:opacity-90"
                     : "border border-border hover:border-primary hover:text-primary"
                 }`}
               >
-                Poptat termín · {site.phoneDisplay}
+                <Phone className="size-4 shrink-0" />
+                <span>Poptat termín · {site.phoneDisplay}</span>
               </a>
             </div>
           </article>
@@ -164,9 +167,10 @@ function Services() {
         </div>
         <Link
           to="/kontakt"
-          className="mt-6 sm:mt-0 shrink-0 inline-flex min-h-12 items-center justify-center rounded-sm bg-primary px-6 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+          className="mt-6 sm:mt-0 shrink-0 inline-flex min-h-12 items-center justify-center gap-2 rounded-sm bg-primary px-6 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
         >
-          Napsat přes formulář
+          <Send className="size-4 shrink-0" />
+          <span>Napsat přes formulář</span>
         </Link>
       </div>
     </div>

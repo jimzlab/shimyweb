@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { Star, Plus, MessageSquare, Phone, Send } from "lucide-react";
 import { useToast } from "@/components/Toaster";
 import { useReveal } from "@/hooks/useReveal";
 import { site } from "@/lib/site";
@@ -161,7 +162,8 @@ function ReviewsPage() {
         {/* Rating badge & Add Button */}
         <div className="flex flex-col sm:items-end gap-3">
           <div className="flex items-center gap-2 rounded-sm border border-border/80 bg-card/60 px-4 py-2">
-            <span className="text-xl font-display text-primary">★ {avgRating}</span>
+            <Star className="size-5 fill-primary text-primary" />
+            <span className="text-xl font-display text-primary">{avgRating}</span>
             <span className="text-xs text-muted-foreground uppercase tracking-wider">
               ({reviewList.length} hodnocení)
             </span>
@@ -169,10 +171,11 @@ function ReviewsPage() {
           <button
             type="button"
             onClick={() => setShowForm((prev) => !prev)}
-            className="inline-flex min-h-11 items-center justify-center rounded-sm bg-primary px-5 text-sm font-medium text-primary-foreground transition-transform hover:-translate-y-0.5"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-sm bg-primary px-5 text-sm font-medium text-primary-foreground transition-transform hover:-translate-y-0.5"
             style={{ boxShadow: "var(--shadow-glow)" }}
           >
-            {showForm ? "Zavřít formulář" : "+ Napsat recenzi"}
+            {showForm ? null : <Plus className="size-4 shrink-0" />}
+            <span>{showForm ? "Zavřít formulář" : "Napsat recenzi"}</span>
           </button>
         </div>
       </div>
@@ -202,16 +205,16 @@ function ReviewsPage() {
                     onClick={() => setRating(star)}
                     onMouseEnter={() => setHoverRating(star)}
                     onMouseLeave={() => setHoverRating(0)}
-                    className="p-1 text-2xl transition-transform hover:scale-110 focus:outline-none"
+                    className="p-1 transition-transform hover:scale-110 focus:outline-none"
                     aria-label={`${star} hvězdiček`}
                   >
-                    <span
-                      className={
-                        star <= (hoverRating || rating) ? "text-primary" : "text-muted-foreground/30"
-                      }
-                    >
-                      ★
-                    </span>
+                    <Star
+                      className={`size-6 ${
+                        star <= (hoverRating || rating)
+                          ? "fill-primary text-primary"
+                          : "text-muted-foreground/30"
+                      }`}
+                    />
                   </button>
                 ))}
                 <span className="ml-2 text-sm font-medium text-muted-foreground">
@@ -251,54 +254,59 @@ function ReviewsPage() {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="např. Jan Novák"
-                className="w-full min-h-11 rounded-sm border border-input bg-card px-4 py-2 text-sm outline-none focus:border-primary"
+                placeholder="např. Petr M."
+                required
+                className="w-full min-h-11 rounded-sm border border-input bg-card/60 px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="review-text" className="text-sm font-medium text-foreground block mb-2">
+                Tvoje zkušenost / Recenze *
+              </label>
+              <textarea
+                id="review-text"
+                rows={3}
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Napiš, jak se ti líbilo focení, přístup nebo výsledné fotky..."
+                required
+                className="w-full rounded-sm border border-input bg-card/60 px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
               />
             </div>
           </div>
 
-          <div className="mt-5">
-            <label htmlFor="reviewer-comment" className="text-sm font-medium text-foreground block mb-2">
-              Slovní hodnocení *
-            </label>
-            <textarea
-              id="reviewer-comment"
-              rows={4}
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder="Jak ses při focení cítil/a a jak jsi spokojen/a s výsledkem?"
-              className="w-full rounded-sm border border-input bg-card px-4 py-3 text-sm outline-none focus:border-primary"
-            />
-          </div>
-
-          <div className="mt-6 flex items-center gap-3">
-            <button
-              type="submit"
-              disabled={submitting}
-              className="min-h-11 rounded-sm bg-primary px-6 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
-            >
-              {submitting ? "Ukládám…" : "Odeslat recenzi"}
-            </button>
+          <div className="mt-6 flex items-center justify-end gap-3">
             <button
               type="button"
               onClick={() => setShowForm(false)}
-              className="min-h-11 rounded-sm border border-border px-5 text-sm text-muted-foreground hover:text-foreground"
+              className="min-h-11 rounded-sm border border-border px-5 text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
               Zrušit
+            </button>
+            <button
+              type="submit"
+              disabled={submitting}
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-sm bg-primary px-6 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
+            >
+              <Send className="size-4 shrink-0" />
+              <span>{submitting ? "Ukládám..." : "Odeslat recenzi"}</span>
             </button>
           </div>
         </form>
       ) : null}
 
-      {/* Loading state */}
+      {/* Reviews Content */}
       {loading ? (
-        <div className="mt-12 text-center py-12 text-muted-foreground">
-          Načítám recenze z databáze…
-        </div>
+        <div className="mt-16 text-center text-sm text-muted-foreground">Načítám recenze z databáze...</div>
       ) : reviewList.length === 0 ? (
         /* Empty State */
         <div className="reveal mt-12 rounded-sm border border-border/80 bg-card/40 p-10 text-center">
-          <p className="font-display text-3xl text-primary">★ ★ ★ ★ ★</p>
+          <div className="flex justify-center gap-1 text-primary">
+            {Array.from({ length: 5 }).map((_, idx) => (
+              <Star key={idx} className="size-6 fill-primary" />
+            ))}
+          </div>
           <h3 className="mt-3 text-xl font-medium">Zatím zde nejsou žádné recenze</h3>
           <p className="mt-2 text-sm text-muted-foreground max-w-md mx-auto">
             Byl/a jsi u mě na focení? Buď první a napiš své hodnocení!
@@ -306,9 +314,10 @@ function ReviewsPage() {
           <button
             type="button"
             onClick={() => setShowForm(true)}
-            className="mt-6 inline-flex min-h-11 items-center justify-center rounded-sm bg-primary px-6 text-sm font-medium text-primary-foreground"
+            className="mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-sm bg-primary px-6 text-sm font-medium text-primary-foreground"
           >
-            + Přidat první recenzi
+            <Plus className="size-4 shrink-0" />
+            <span>Přidat první recenzi</span>
           </button>
         </div>
       ) : (
@@ -323,11 +332,14 @@ function ReviewsPage() {
               <div>
                 <div className="flex items-center justify-between gap-2">
                   {/* Rating Stars */}
-                  <div className="flex text-primary text-lg" aria-label={`Hodnocení ${r.rating} z 5`}>
+                  <div className="flex gap-0.5" aria-label={`Hodnocení ${r.rating} z 5`}>
                     {Array.from({ length: 5 }).map((_, idx) => (
-                      <span key={idx} className={idx < r.rating ? "text-primary" : "text-muted-foreground/30"}>
-                        ★
-                      </span>
+                      <Star
+                        key={idx}
+                        className={`size-4 ${
+                          idx < r.rating ? "fill-primary text-primary" : "text-muted-foreground/30"
+                        }`}
+                      />
                     ))}
                   </div>
                   <span className="text-xs uppercase tracking-wider text-muted-foreground rounded-full border border-border/60 px-2.5 py-0.5">
@@ -353,10 +365,11 @@ function ReviewsPage() {
         <p className="mt-2 text-muted-foreground">Ozvi se mi a domluvíme termín i podrobnosti.</p>
         <a
           href={site.phoneHref}
-          className="mt-6 inline-flex min-h-12 items-center justify-center rounded-sm bg-primary px-8 text-base font-medium text-primary-foreground transition-transform hover:-translate-y-0.5"
+          className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-sm bg-primary px-8 text-base font-medium text-primary-foreground transition-transform hover:-translate-y-0.5"
           style={{ boxShadow: "var(--shadow-glow)" }}
         >
-          Zavolat: {site.phoneDisplay}
+          <Phone className="size-5 shrink-0" />
+          <span>Zavolat: {site.phoneDisplay}</span>
         </a>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { Phone, ArrowRight, Camera } from "lucide-react";
 import { Lightbox } from "@/components/Lightbox";
 import { useReveal } from "@/hooks/useReveal";
 import { photos, heroWedding, portrait1, family1, product1 } from "@/lib/photos";
@@ -12,7 +13,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Fotograf z Frýdku-Místku. Portréty, akce, auta i čistá atmosféra po celém Moravskoslezském kraji. Rezervace na +420 777 123 456.",
+          `Fotograf z Frýdku-Místku. Portréty, akce, auta i čistá atmosféra po celém Moravskoslezském kraji. Rezervace na ${site.phoneDisplay}.`,
       },
       { property: "og:title", content: `${site.name} — Fotograf ${site.city}` },
       {
@@ -77,8 +78,9 @@ function Home() {
           }}
         />
         <div className="container-x pb-14 sm:pb-20">
-          <p className="eyebrow">
-            {site.role} · {site.city}
+          <p className="eyebrow flex items-center gap-1.5">
+            <Camera className="size-3.5" />
+            <span>{site.role} · {site.city}</span>
           </p>
           <h1 className="mt-4 max-w-3xl text-4xl leading-[1.05] sm:text-6xl lg:text-7xl">
             Zachycuji okamžiky, příběhy a atmosféru skrze objektiv.
@@ -92,13 +94,15 @@ function Home() {
               className="flex min-h-12 items-center justify-center gap-2 rounded-sm bg-primary px-6 text-base font-medium text-primary-foreground transition-transform hover:-translate-y-0.5"
               style={{ boxShadow: "var(--shadow-glow)" }}
             >
-              Zavolejte a rezervujte termín · {site.phoneDisplay}
+              <Phone className="size-4 shrink-0" />
+              <span>Zavolejte a rezervujte termín · {site.phoneDisplay}</span>
             </a>
             <Link
               to="/portfolio"
-              className="flex min-h-12 items-center justify-center rounded-sm border border-border px-6 text-base transition-colors hover:border-primary hover:text-primary"
+              className="flex min-h-12 items-center justify-center gap-2 rounded-sm border border-border px-6 text-base transition-colors hover:border-primary hover:text-primary"
             >
-              Prohlédnout portfolio
+              <span>Prohlédnout portfolio</span>
+              <ArrowRight className="size-4 shrink-0" />
             </Link>
           </div>
           <p className="mt-4 text-sm text-muted-foreground">Nejlépe se dovoláte: {site.hours}</p>
@@ -145,9 +149,10 @@ function Home() {
         <div className="mt-10 text-center">
           <Link
             to="/portfolio"
-            className="inline-flex min-h-12 items-center text-primary underline-offset-8 hover:underline"
+            className="inline-flex min-h-12 items-center gap-2 text-primary hover:underline"
           >
-            Celá galerie →
+            <span>Celá galerie</span>
+            <ArrowRight className="size-4 shrink-0" />
           </Link>
         </div>
       </section>
@@ -176,13 +181,14 @@ function Home() {
           </p>
           <a
             href={site.phoneHref}
-            className="mt-8 inline-flex min-h-12 items-center rounded-sm bg-primary px-8 text-lg font-medium text-primary-foreground transition-transform hover:-translate-y-0.5"
+            className="mt-8 inline-flex min-h-12 items-center gap-2 rounded-sm bg-primary px-8 text-lg font-medium text-primary-foreground transition-transform hover:-translate-y-0.5"
             style={{ boxShadow: "var(--shadow-glow)" }}
           >
-            {site.phoneDisplay}
+            <Phone className="size-5 shrink-0" />
+            <span>{site.phoneDisplay}</span>
           </a>
           <p className="mt-4 text-sm text-muted-foreground">
-            Radši píšete? <Link to="/kontakt" className="text-primary">Kontaktní formulář</Link>
+            Radši píšete? <Link to="/kontakt" className="text-primary underline hover:no-underline">Kontaktní formulář</Link>
           </p>
         </div>
       </section>

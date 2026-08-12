@@ -1,5 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { Phone, Menu, X } from "lucide-react";
 import { nav, site } from "@/lib/site";
 
 export function Header() {
@@ -39,7 +40,7 @@ export function Header() {
             href={site.phoneHref}
             className="flex min-h-11 items-center gap-2 rounded-sm bg-primary px-3 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 sm:px-4"
           >
-            <span aria-hidden="true">☎</span>
+            <Phone className="size-4 shrink-0" />
             <span className="hidden sm:inline">{site.phoneDisplay}</span>
             <span className="sm:hidden">Zavolat</span>
           </a>
@@ -49,18 +50,9 @@ export function Header() {
             aria-expanded={open}
             aria-controls="mobile-menu"
             aria-label={open ? "Zavřít menu" : "Otevřít menu"}
-            className="flex size-11 flex-col items-center justify-center gap-1.5 rounded-sm border border-border lg:hidden"
+            className="flex size-11 items-center justify-center rounded-sm border border-border lg:hidden text-foreground"
           >
-            <span
-              aria-hidden="true"
-              className="h-px w-5 bg-foreground transition-transform"
-              style={open ? { transform: "translateY(3px) rotate(45deg)" } : undefined}
-            />
-            <span
-              aria-hidden="true"
-              className="h-px w-5 bg-foreground transition-transform"
-              style={open ? { transform: "translateY(-3px) rotate(-45deg)" } : undefined}
-            />
+            {open ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
         </div>
       </div>

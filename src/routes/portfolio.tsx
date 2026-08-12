@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Lightbox } from "@/components/Lightbox";
 import { useReveal } from "@/hooks/useReveal";
-import { categories, photos, type Category } from "@/lib/photos";
+import { photos } from "@/lib/photos";
 import { site } from "@/lib/site";
 
 export const Route = createFileRoute("/portfolio")({
@@ -12,12 +12,12 @@ export const Route = createFileRoute("/portfolio")({
       {
         name: "description",
         content:
-          "Galerie fotografií rozdělená do kategorií: svatby, portréty, rodinné a produktové focení. Klikněte na fotku pro zvětšení.",
+          "Galerie fotografií. Svatební, portrétní, automobilové i akční focení. Klikněte na fotku pro zvětšení.",
       },
       { property: "og:title", content: `Portfolio | ${site.name}` },
       {
         property: "og:description",
-        content: "Vybrané svatební, portrétní, rodinné a produktové fotografie.",
+        content: "Vybrané svatební, portrétní, rodinné a automobilové fotografie.",
       },
       { property: "og:url", content: "/portfolio" },
     ],
@@ -27,43 +27,19 @@ export const Route = createFileRoute("/portfolio")({
 });
 
 function Portfolio() {
-  const [filter, setFilter] = useState<Category | "vse">("vse");
   const [lightbox, setLightbox] = useState<number | null>(null);
-  useReveal([filter]);
-
-  const visible = filter === "vse" ? photos : photos.filter((p) => p.category === filter);
+  useReveal();
 
   return (
     <div className="container-x py-14 sm:py-20">
       <p className="eyebrow">Portfolio</p>
       <h1 className="mt-3 text-4xl sm:text-5xl">Galerie</h1>
       <p className="mt-4 max-w-xl text-muted-foreground">
-        Vyberte kategorii. Kliknutím fotku zvětšíte, na mobilu mezi snímky přejíždíte prstem.
+        Kliknutím na fotku ji zvětšíte, na mobilu mezi snímky přejíždíte prstem.
       </p>
 
-      <div className="mt-8 flex flex-wrap gap-2" role="group" aria-label="Filtr kategorií">
-        {categories.map((c) => (
-          <button
-            key={c.id}
-            type="button"
-            onClick={() => {
-              setFilter(c.id);
-              setLightbox(null);
-            }}
-            aria-pressed={filter === c.id}
-            className={`min-h-11 rounded-full border px-5 text-sm tracking-wide transition-colors ${
-              filter === c.id
-                ? "border-primary bg-primary text-primary-foreground"
-                : "border-border text-muted-foreground hover:border-primary hover:text-primary"
-            }`}
-          >
-            {c.label}
-          </button>
-        ))}
-      </div>
-
       <div className="mt-10 columns-1 gap-4 sm:columns-2 lg:columns-3 [&>*]:mb-4">
-        {visible.map((photo, i) => (
+        {photos.map((photo, i) => (
           <button
             key={`${photo.src}-${i}`}
             type="button"
@@ -87,7 +63,7 @@ function Portfolio() {
 
       {lightbox !== null ? (
         <Lightbox
-          photos={visible}
+          photos={photos}
           index={lightbox}
           onIndexChange={setLightbox}
           onClose={() => setLightbox(null)}

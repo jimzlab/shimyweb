@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { Phone, Send, CheckCircle2, Sparkles, Camera, HeartHandshake, Flame } from "lucide-react";
 import { aboutPhotographer as aboutImg } from "@/lib/photos";
 import { useReveal } from "@/hooks/useReveal";
 import { site } from "@/lib/site";
@@ -23,17 +24,17 @@ export const Route = createFileRoute("/o-mne")({
 
 const whyMe = [
   {
-    number: "01",
+    icon: Sparkles,
     title: "Mladý a svěží pohled",
     description: "Sleduji moderní trendy a rád experimentuji s kompozicí i výslednou úpravou.",
   },
   {
-    number: "02",
+    icon: HeartHandshake,
     title: "Osobní přístup",
     description: "Záleží mi na tom, abys se před objektivem cítil/a přirozeně, v pohodě a uvolněně.",
   },
   {
-    number: "03",
+    icon: Flame,
     title: "Zápal pro věc",
     description: "Focení mě nesmírně baví – do každého zmáčknutí spouště dávám maximum a na fotkách je to vidět.",
   },
@@ -53,7 +54,10 @@ function About() {
     <div className="container-x py-14 sm:py-20">
       {/* Hero Header */}
       <div className="reveal max-w-3xl">
-        <p className="eyebrow">O mně · Fotograf</p>
+        <p className="eyebrow flex items-center gap-1.5">
+          <Camera className="size-3.5" />
+          <span>O mně · Fotograf</span>
+        </p>
         <h1 className="mt-3 text-4xl leading-tight sm:text-6xl">Ahoj, jsem Ondra.</h1>
         <p className="mt-4 text-xl text-primary font-display sm:text-2xl">
           Zachycuji okamžiky, příběhy a atmosféru skrze objektiv.
@@ -74,8 +78,9 @@ function About() {
             className="w-full rounded-sm object-cover"
             style={{ boxShadow: "var(--shadow-elegant)" }}
           />
-          <div className="absolute bottom-4 left-4 rounded-sm border border-border/80 bg-background/90 backdrop-blur-md px-4 py-2 text-xs tracking-wider uppercase text-foreground">
-            23 let · Vášeň pro detail
+          <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-sm border border-border/80 bg-background/90 backdrop-blur-md px-4 py-2 text-xs tracking-wider uppercase text-foreground">
+            <Sparkles className="size-3.5 text-primary shrink-0" />
+            <span>23 let · Vášeň pro detail</span>
           </div>
         </div>
 
@@ -101,13 +106,14 @@ function About() {
           </div>
 
           <div className="pt-2">
-            <p className="text-sm font-medium text-foreground uppercase tracking-wider mb-3">
-              Co nejraději fotím:
+            <p className="text-sm font-medium text-foreground uppercase tracking-wider mb-3 flex items-center gap-1.5">
+              <Sparkles className="size-3.5 text-primary" />
+              <span>Co nejraději fotím:</span>
             </p>
             <div className="grid sm:grid-cols-2 gap-2.5">
               {specialties.map((item) => (
                 <div key={item} className="flex items-center gap-2.5 text-sm text-muted-foreground">
-                  <span className="size-1.5 rounded-full bg-primary shrink-0" />
+                  <CheckCircle2 className="size-4 text-primary shrink-0" />
                   <span>{item}</span>
                 </div>
               ))}
@@ -117,16 +123,18 @@ function About() {
           <div className="pt-4 flex flex-col gap-3 sm:flex-row">
             <a
               href={site.phoneHref}
-              className="flex min-h-12 items-center justify-center rounded-sm bg-primary px-6 font-medium text-primary-foreground transition-transform hover:-translate-y-0.5"
+              className="flex min-h-12 items-center justify-center gap-2 rounded-sm bg-primary px-6 font-medium text-primary-foreground transition-transform hover:-translate-y-0.5"
               style={{ boxShadow: "var(--shadow-glow)" }}
             >
-              Zavolat: {site.phoneDisplay}
+              <Phone className="size-4 shrink-0" />
+              <span>Zavolat: {site.phoneDisplay}</span>
             </a>
             <Link
               to="/kontakt"
-              className="flex min-h-12 items-center justify-center rounded-sm border border-border px-6 transition-colors hover:border-primary hover:text-primary"
+              className="flex min-h-12 items-center justify-center gap-2 rounded-sm border border-border px-6 transition-colors hover:border-primary hover:text-primary"
             >
-              Napiš mi zprávu
+              <Send className="size-4 shrink-0" />
+              <span>Napiš mi zprávu</span>
             </Link>
           </div>
         </div>
@@ -143,17 +151,22 @@ function About() {
         </div>
 
         <div className="mt-10 grid gap-6 sm:grid-cols-3">
-          {whyMe.map((item, i) => (
-            <div
-              key={item.title}
-              className="reveal rounded-sm border border-border/80 bg-card/40 p-6 transition-colors hover:border-primary/50"
-              style={{ transitionDelay: `${i * 100}ms` }}
-            >
-              <span className="font-display text-3xl text-primary">{item.number}</span>
-              <h3 className="mt-3 text-xl font-medium">{item.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{item.description}</p>
-            </div>
-          ))}
+          {whyMe.map((item, i) => {
+            const Icon = item.icon;
+            return (
+              <div
+                key={item.title}
+                className="reveal group rounded-sm border border-border/80 bg-card/40 p-6 transition-all hover:border-primary/50 hover:bg-card/70"
+                style={{ transitionDelay: `${i * 100}ms` }}
+              >
+                <div className="flex size-12 items-center justify-center rounded-sm border border-primary/30 bg-primary/10 text-primary transition-transform group-hover:scale-105">
+                  <Icon className="size-6 shrink-0" />
+                </div>
+                <h3 className="mt-4 text-xl font-medium">{item.title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{item.description}</p>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

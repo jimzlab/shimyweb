@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useMemo } from "react";
+import { useState } from "react";
+import { Phone, Mail, MapPin, Instagram, Facebook, Send } from "lucide-react";
 import { useToast } from "@/components/Toaster";
 import { useReveal } from "@/hooks/useReveal";
 import { site } from "@/lib/site";
@@ -17,7 +18,7 @@ export const Route = createFileRoute("/kontakt")({
       {
         name: "description",
         content:
-          "Rezervujte focení telefonicky na +420 777 123 456, nebo napište přes kontaktní formulář. Frýdek-Místek a Moravskoslezský kraj.",
+          `Rezervujte focení telefonicky na ${site.phoneDisplay}, nebo napište přes kontaktní formulář. Frýdek-Místek a Moravskoslezský kraj.`,
       },
       { property: "og:title", content: `Kontakt | ${site.name}` },
       { property: "og:description", content: "Telefon, e-mail a formulář pro poptávku focení." },
@@ -136,33 +137,58 @@ function Contact() {
       <div className="mt-12 grid gap-12 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
         <div className="reveal">
           <div className="rounded-sm border border-primary/40 bg-card p-7">
-            <p className="eyebrow">Nejrychlejší cesta</p>
+            <p className="eyebrow flex items-center gap-1.5">
+              <Phone className="size-3.5" />
+              <span>Nejrychlejší cesta</span>
+            </p>
             <a
               href={site.phoneHref}
-              className="mt-3 flex min-h-12 items-center font-display text-3xl text-primary sm:text-4xl"
+              className="mt-3 flex min-h-12 items-center gap-3 font-display text-3xl text-primary sm:text-4xl hover:underline"
             >
-              {site.phoneDisplay}
+              <Phone className="size-8 shrink-0 text-primary" />
+              <span>{site.phoneDisplay}</span>
             </a>
             <p className="mt-2 text-sm text-muted-foreground">Kdy volat: {site.hours}</p>
           </div>
 
           <dl className="mt-8 space-y-6 text-sm">
             <div>
-              <dt className="eyebrow">E-mail</dt>
+              <dt className="eyebrow flex items-center gap-1.5">
+                <Mail className="size-3.5" />
+                <span>E-mail</span>
+              </dt>
               <dd className="mt-2">
                 <a
                   href={`mailto:${site.email}`}
-                  className="flex min-h-11 items-center text-muted-foreground transition-colors hover:text-primary"
+                  className="flex min-h-11 items-center gap-2 text-muted-foreground transition-colors hover:text-primary"
                 >
-                  {site.email}
+                  <Mail className="size-4 shrink-0 text-primary" />
+                  <span>{site.email}</span>
                 </a>
               </dd>
             </div>
             <div>
-              <dt className="eyebrow">Kde fotím</dt>
+              <dt className="eyebrow flex items-center gap-1.5">
+                <MapPin className="size-3.5" />
+                <span>Kde fotím</span>
+              </dt>
               <dd className="mt-2 text-muted-foreground">
                 {site.city}, {site.region}.
               </dd>
+              {/* Embedded Google Map */}
+              <div className="mt-3 overflow-hidden rounded-sm border border-border/80 bg-card">
+                <iframe
+                  title="Mapa působnosti — Frýdek-Místek"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d82725.68853874317!2d18.293674682050073!3d49.68266205791789!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4713f0190a618d3d%3A0x400af0f6614e590!2sFr%C3%BDdek-M%C3%ADstek!5e0!3m2!1scs!2scz!4v1700000000000!5m2!1scs!2scz"
+                  width="100%"
+                  height="200"
+                  style={{ border: 0, filter: "grayscale(1) invert(92%) contrast(1.2)" }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  className="w-full opacity-90 transition-opacity hover:opacity-100"
+                />
+              </div>
             </div>
             <div>
               <dt className="eyebrow">Sociální sítě</dt>
@@ -171,19 +197,19 @@ function Contact() {
                   href={site.instagram}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="flex size-11 items-center justify-center rounded-full border border-border transition-colors hover:border-primary hover:text-primary"
+                  className="flex size-11 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-primary hover:text-primary"
                   aria-label="Instagram"
                 >
-                  IG
+                  <Instagram className="size-5" />
                 </a>
                 <a
                   href={site.facebook}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="flex size-11 items-center justify-center rounded-full border border-border transition-colors hover:border-primary hover:text-primary"
+                  className="flex size-11 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-primary hover:text-primary"
                   aria-label="Facebook"
                 >
-                  FB
+                  <Facebook className="size-5" />
                 </a>
               </dd>
             </div>
@@ -285,9 +311,10 @@ function Contact() {
           <button
             type="submit"
             disabled={sending}
-            className="mt-7 flex min-h-12 w-full items-center justify-center rounded-sm bg-primary px-6 font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-60 sm:w-auto"
+            className="mt-7 flex min-h-12 w-full items-center justify-center gap-2 rounded-sm bg-primary px-6 font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-60 sm:w-auto"
           >
-            {sending ? "Odesílám…" : "Odeslat zprávu"}
+            <Send className="size-4 shrink-0" />
+            <span>{sending ? "Odesílám…" : "Odeslat zprávu"}</span>
           </button>
           <p className="mt-3 text-xs text-muted-foreground">
             Odpovídám do 24 hodin. Pro rezervaci termínu je rychlejší telefon.
